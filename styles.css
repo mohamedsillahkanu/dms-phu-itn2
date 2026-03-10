@@ -431,3 +431,84 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gray);co
   .chart-grid{grid-template-columns:1fr;}
   .enroll-table input{width:48px;}
 }
+
+/* ══════════════════════════════════════════
+   SUPERVISOR STYLES
+══════════════════════════════════════════ */
+
+/* Role grid — 3 columns for 5 buttons */
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+
+/* Supervisor filter tabs */
+.sup-filter-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 4px;margin-bottom:2px;}
+.sup-filter-tab{flex-shrink:0;background:var(--navy-l);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--navy);cursor:pointer;}
+.sup-filter-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+/* Supervisor user card */
+.sup-user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.sup-user-card:active{background:var(--navy-l);}
+.suc-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.suc-avatar.navy{background:var(--navy);}
+.suc-avatar.green{background:var(--green);}
+.suc-avatar.teal{background:var(--teal);}
+.suc-avatar.orange{background:var(--orange);}
+.suc-avatar.gold{background:var(--gold-d);}
+.suc-info{flex:1;min-width:0;}
+.suc-name{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--navy);}
+.suc-meta{font-size:11px;color:var(--text-s);margin-top:2px;}
+.suc-stats{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.suc-arr{font-size:20px;color:var(--gray-d);font-weight:300;}
+
+/* Supervisor distributor quick row */
+.sup-dist-row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border);cursor:pointer;}
+.sup-dist-row:last-child{border-bottom:none;}
+.sup-dist-row:active{background:var(--navy-l);}
+.sdr-info{flex:1;min-width:0;}
+.sdr-name{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;color:var(--navy);}
+.sdr-meta{font-size:10px;color:var(--text-s);margin-top:1px;}
+.sdr-stats{display:flex;align-items:center;gap:6px;}
+.sdr-itn{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;color:var(--navy);text-align:right;min-width:40px;}
+.sdr-itn span{display:block;font-size:9px;font-weight:400;color:var(--text-s);}
+.sdr-bar-wrap{width:50px;height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
+.sdr-bar{height:100%;border-radius:4px;transition:width .4s;}
+.sdr-pct{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;min-width:30px;text-align:right;}
+.sdr-pct.green{color:var(--green-d);}
+.sdr-pct.gold{color:var(--gold-d);}
+.sdr-pct.red{color:var(--red-d);}
+
+/* Supervisor profile card */
+.sup-profile-card{display:flex;align-items:center;gap:14px;padding:16px;background:var(--navy-l);border:2px solid var(--navy);border-radius:14px;margin-bottom:14px;}
+.spc-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.spc-avatar.navy{background:var(--navy);}
+.spc-avatar.green{background:var(--green);}
+.spc-avatar.teal{background:var(--teal);}
+.spc-avatar.orange{background:var(--orange);}
+.spc-avatar.gold{background:var(--gold-d);}
+.spc-avatar.red{background:var(--red);}
+.spc-info{flex:1;}
+.spc-name{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.spc-role{margin:3px 0;}
+.spc-contact{font-size:11px;color:var(--text-s);margin-top:3px;}
+
+/* Activity timeline */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-dot.green{background:var(--green);}
+.tl-dot.orange{background:var(--orange);}
+.tl-dot.red{background:var(--red);}
+.tl-dot.navy{background:var(--navy);}
+.tl-dot.teal{background:var(--teal);}
+.tl-content{flex:1;min-width:0;}
+.tl-title{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;color:var(--navy);}
+.tl-meta{font-size:11px;color:var(--text);margin-top:1px;}
+.tl-time{font-size:10px;color:var(--text-s);margin-top:2px;}
+
+/* Topbar avatar colors */
+.topbar-avatar.gold{background:var(--gold-d);}
+
+/* Responsive: 3-col role grid wraps on small screens */
+@media(max-width:360px){
+  .role-grid{grid-template-columns:1fr 1fr;}
+}
