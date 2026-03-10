@@ -1420,8 +1420,17 @@ let distFormStep = 1;
 let distFormData = {};
 
 // ─── STORAGE ───
-function ls(k,v){if(v===undefined){try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}}localStorage.setItem(k,JSON.stringify(v))}
-function loadState(k,def){return ls(k)||def;}
+// ── In-memory fallback when localStorage is blocked (Edge Tracking Prevention) ──
+const _MEM = {};
+function ls(k,v){
+  if(v===undefined){
+    try{ const r=localStorage.getItem(k); return r?JSON.parse(r):null; }
+    catch{ return _MEM[k]!==undefined?_MEM[k]:null; }
+  }
+  try{ localStorage.setItem(k,JSON.stringify(v)); }catch{}
+  _MEM[k]=v; // always keep in-memory copy
+}
+function loadState(k,def){const v=ls(k);return(v!==null&&v!==undefined)?v:(def!==undefined?def:null);}
 function saveState(k,v){ls(k,v);}
 
 // ─── DATA STORES ───
