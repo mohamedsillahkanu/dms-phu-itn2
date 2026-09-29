@@ -1,15 +1,11 @@
-username,full_name,role,district,chiefdom,phu,staff_id,vehicle,phone
-DMS-PL-01,Mohamed Kamara,DMS Staff,Port Loko,,,SL-DMS-PL-01,,
-DMS-PL-02,Fatima Koroma,DMS Staff,Port Loko,,,SL-DMS-PL-02,,
-DRV-PL-01,Abdul Conteh,Driver,Port Loko,,,,ABC-123,076123456
-DRV-PL-02,Lansana Turay,Driver,Port Loko,,,,DEF-456,076123457
-bureh1,Aminata Koroma,PHU Staff,Port Loko,Bureh Kasseh,Bureh Kasseh CHC,,,+232-76-001001
-bureh2,Ibrahim Sesay,PHU Staff,Port Loko,Bureh Kasseh,Bureh Town MCHP,,,+232-76-001002
-kaffu1,Fatmata Bangura,PHU Staff,Port Loko,Kaffu Bullom,Kaffu Bullom CHC,,,+232-76-001003
-mange1,Fatmata Bangura,PHU Staff,Port Loko,Kasseh,Mange CHC,,,+232-76-001006
-mohamed1,Mohamed CHC Staff,PHU Staff,Port Loko,Kasseh,Mohamed CHC,,,+232-76-001007
-icf1,ICF CHC Staff,PHU Staff,Port Loko,Bureh Kasseh,ICF CHC,,,+232-76-001008
-egov1,eGov CHC Staff,PHU Staff,Port Loko,Bureh Kasseh,eGov CHC,,,+232-76-001009
-nmcp1,NMCP CHC Staff,PHU Staff,Port Loko,Kasseh,NMCP CHC,,,+232-76-001010
-training1,Training MCHP Staff,PHU Staff,Port Loko,Kaffu Bullom,Training MCHP,,,+232-76-001011
-demo1,Demo CHP Staff,PHU Staff,Port Loko,Bureh Kasseh,Demo CHP,,,+232-76-001012
+district,chiefdom,phu_name
+Port Loko,Bureh Kasseh,Bureh Kasseh CHC
+Port Loko,Bureh Kasseh,Bureh Town MCHP
+Port Loko,Kaffu Bullom,Kaffu Bullom CHC
+Port Loko,Kasseh,Mange CHC
+Port Loko,Kasseh,Mohamed CHC
+Port Loko,Bureh Kasseh,ICF CHC
+Port Loko,Bureh Kasseh,eGov CHC
+Port Loko,Kasseh,NMCP CHC
+Port Loko,Kaffu Bullom,Training MCHP
+Port Loko,Bureh Kasseh,Demo CHP
