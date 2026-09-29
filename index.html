@@ -771,15 +771,15 @@
                     ⚠ This PHU has already been dispatched to!
                 </div>
 
-                <!-- STEP 2: Driver verification -->
+                <!-- STEP 2: Conveyor verification -->
                 <div class="qr-scanner-section">
-                    <h3 style="color:var(--navy);margin-bottom:15px;">STEP 2: VERIFY DRIVER</h3>
+                    <h3 style="color:var(--navy);margin-bottom:15px;">STEP 2: VERIFY CONVEYOR</h3>
 
                     <div>
-                        <label class="label">DRIVER USERNAME (CONFIDENTIAL)</label>
+                        <label class="label">CONVEYOR USERNAME (CONFIDENTIAL)</label>
                         <div style="display:flex;gap:8px;max-width:480px;">
                             <div class="driver-password-container" style="flex:1;">
-                                <input type="password" class="input" id="driverUsername" placeholder="Enter driver username">
+                                <input type="password" class="input" id="driverUsername" placeholder="Enter conveyor username">
                                 <span class="driver-eye-icon" id="toggleDriverPassword">👁️</span>
                             </div>
                             <button class="btn" id="verifyDriverBtn">VERIFY</button>
@@ -1251,6 +1251,55 @@ App.showLogin = function () {
     document.getElementById('loginUsername').value = '';
     document.getElementById('loginErr').style.display = 'none';
 };
+// ═══════════════════════════════════════════════════════════
+// CSV LOADER: reads users.csv and phu_hierarchy.csv from the same folder.
+// If they cannot be read (page opened by double-click, files missing,
+// or no internet for the parser) the built-in copy below is used instead.
+// Keep BUILT_IN_CSV in step with the CSV files when you add users or PHUs.
+// ═══════════════════════════════════════════════════════════
+const BUILT_IN_CSV = {
+    'users.csv': "username,full_name,role,district,chiefdom,phu,staff_id,vehicle,phone\nDMS-PL-01,Mohamed Kamara,DMS Staff,Port Loko,,,SL-DMS-PL-01,,\nDMS-PL-02,Fatima Koroma,DMS Staff,Port Loko,,,SL-DMS-PL-02,,\nDRV-PL-01,Abdul Conteh,Driver,Port Loko,,,,ABC-123,076123456\nDRV-PL-02,Lansana Turay,Driver,Port Loko,,,,DEF-456,076123457\nbureh1,Aminata Koroma,PHU Staff,Port Loko,Bureh Kasseh,Bureh Kasseh CHC,,,+232-76-001001\nbureh2,Ibrahim Sesay,PHU Staff,Port Loko,Bureh Kasseh,Bureh Town MCHP,,,+232-76-001002\nkaffu1,Fatmata Bangura,PHU Staff,Port Loko,Kaffu Bullom,Kaffu Bullom CHC,,,+232-76-001003\nmange1,Fatmata Bangura,PHU Staff,Port Loko,Kasseh,Mange CHC,,,+232-76-001006\nmohamed1,Mohamed CHC Staff,PHU Staff,Port Loko,Kasseh,Mohamed CHC,,,+232-76-001007\nicf1,ICF CHC Staff,PHU Staff,Port Loko,Bureh Kasseh,ICF CHC,,,+232-76-001008\negov1,eGov CHC Staff,PHU Staff,Port Loko,Bureh Kasseh,eGov CHC,,,+232-76-001009\nnmcp1,NMCP CHC Staff,PHU Staff,Port Loko,Kasseh,NMCP CHC,,,+232-76-001010\ntraining1,Training MCHP Staff,PHU Staff,Port Loko,Kaffu Bullom,Training MCHP,,,+232-76-001011\ndemo1,Demo CHP Staff,PHU Staff,Port Loko,Bureh Kasseh,Demo CHP,,,+232-76-001012",
+    'phu_hierarchy.csv': "district,chiefdom,phu_name\nPort Loko,Bureh Kasseh,Bureh Kasseh CHC\nPort Loko,Bureh Kasseh,Bureh Town MCHP\nPort Loko,Kaffu Bullom,Kaffu Bullom CHC\nPort Loko,Kasseh,Mange CHC\nPort Loko,Kasseh,Mohamed CHC\nPort Loko,Bureh Kasseh,ICF CHC\nPort Loko,Bureh Kasseh,eGov CHC\nPort Loko,Kasseh,NMCP CHC\nPort Loko,Kaffu Bullom,Training MCHP\nPort Loko,Bureh Kasseh,Demo CHP"
+};
+App.usingBuiltIn = [];
+
+function parseCSV(text) {
+    if (window.Papa) return Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+    const rows = []; let row = [], cell = '', q = false;
+    text = text.replace(/^\uFEFF/, '');
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (q) {
+            if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+            else if (ch === '"') q = false;
+            else cell += ch;
+        } else if (ch === '"') q = true;
+        else if (ch === ',') { row.push(cell); cell = ''; }
+        else if (ch === '\n' || ch === '\r') {
+            if (ch === '\r' && text[i + 1] === '\n') i++;
+            row.push(cell); cell = '';
+            if (row.some(c => c.trim() !== '')) rows.push(row);
+            row = [];
+        } else cell += ch;
+    }
+    row.push(cell); if (row.some(c => c.trim() !== '')) rows.push(row);
+    const head = rows.shift().map(h => h.trim());
+    return rows.map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] || '').trim()])));
+}
+
+App.loadCSV = async function (name) {
+    try {
+        const res = await fetch(name + '?v=' + Date.now());
+        if (!res.ok) throw new Error(name + ' not found');
+        const data = parseCSV(await res.text());
+        if (!data.length) throw new Error(name + ' is empty');
+        return data;
+    } catch (e) {
+        console.warn('Using built-in ' + name + ':', e.message);
+        if (!App.usingBuiltIn.includes(name)) App.usingBuiltIn.push(name);
+        return parseCSV(BUILT_IN_CSV[name]);
+    }
+};
 </script>
 
 <!-- ═══ DMS DISPATCH MODULE SCRIPT ═══ -->
@@ -1311,17 +1360,11 @@ App.dmsLoad = async function () {
 };
 
 async function loadUsersCSV() {
-    const res = await fetch('users.csv');
-    if (!res.ok) throw new Error('users.csv not found');
-    const text = await res.text();
-    users = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+    users = await App.loadCSV('users.csv');
 }
 
 async function loadPHUCSV() {
-    const res = await fetch('phu_hierarchy.csv');
-    if (!res.ok) throw new Error('phu_hierarchy.csv not found');
-    const text = await res.text();
-    phuHierarchy = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+    phuHierarchy = await App.loadCSV('phu_hierarchy.csv');
 
     HIERARCHY_DATA = {};
     phuHierarchy.forEach(row => {
@@ -1455,7 +1498,7 @@ window.updatePlatePreview = updatePlatePreview;
 document.getElementById('verifyDriverBtn').addEventListener('click', () => {
     const u = document.getElementById('driverUsername').value.trim();
     if (u) verifyDriver(u);
-    else showToast('Enter a driver username', 'error');
+    else showToast('Enter a conveyor username', 'error');
 });
 
 // Allow Enter key in driver username field
@@ -1470,7 +1513,7 @@ function stopQR() { /* no-op — scanner removed */ }
 
 function verifyDriver(username) {
     const driver = users.find(u => u.username === username && u.role === 'Driver');
-    if (!driver) { showToast('Invalid driver username', 'error'); return; }
+    if (!driver) { showToast('Invalid conveyor username', 'error'); return; }
 
     verifiedDriver = driver;
     document.getElementById('verifiedDriverName').textContent = driver.full_name;
@@ -1485,7 +1528,7 @@ function verifyDriver(username) {
     if (phu && !dispatchedPHUs.has(phu)) {
         document.getElementById('saveBtn').disabled = false;
     }
-    showToast('Driver verified!', 'success');
+    showToast('Conveyor verified!', 'success');
 }
 
 function resetDriverVerification() {
@@ -1538,7 +1581,7 @@ function resetForm() {
 document.getElementById('saveBtn').addEventListener('click', saveAndSyncDispatch);
 
 async function saveAndSyncDispatch() {
-    if (!verifiedDriver) { showToast('Please verify driver first', 'error'); return; }
+    if (!verifiedDriver) { showToast('Please verify conveyor first', 'error'); return; }
 
     const chiefdom = document.getElementById('chiefdomSel').value;
     const phu      = document.getElementById('phuSel').value;
@@ -2197,10 +2240,7 @@ let quantityMatch = null; // true/false
 // CSV LOADING + ENTRY (called by the shared login)
 // ═══════════════════════════════════════════
 App.phuLoad = async function () {
-    const res = await fetch('users.csv');
-    if (!res.ok) throw new Error('users.csv not found');
-    const text = await res.text();
-    users = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+    users = await App.loadCSV('users.csv');
 };
 
 App.phuFind = u => users.find(x => x.username === u && x.role === 'PHU Staff');
@@ -2851,7 +2891,9 @@ window.recalcCount = recalcCount;
             await App.dmsLoad();
             await App.phuLoad();
             inp.disabled = false; btn.disabled = false; btn.textContent = 'LOGIN';
-            load.style.display = 'none';
+            if (App.usingBuiltIn.length) {
+                load.innerHTML = '<span style="font-size:0.72rem;color:#888;">Using built-in user and PHU list</span>';
+            } else load.style.display = 'none';
         } catch (e) {
             console.error(e);
             load.innerHTML = '❌ Error loading CSV files. Ensure <code>users.csv</code> and <code>phu_hierarchy.csv</code> are in the same folder.';
