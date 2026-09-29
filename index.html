@@ -1293,6 +1293,9 @@ App.loadCSV = async function (name) {
         if (!res.ok) throw new Error(name + ' not found');
         const data = parseCSV(await res.text());
         if (!data.length) throw new Error(name + ' is empty');
+        const need = name === 'phu_hierarchy.csv' ? ['district', 'chiefdom', 'phu_name'] : ['username', 'role'];
+        const missing = need.filter(c => !(c in data[0]));
+        if (missing.length) throw new Error(name + ' has the wrong columns (missing ' + missing.join(', ') + ')');
         return data;
     } catch (e) {
         console.warn('Using built-in ' + name + ':', e.message);
